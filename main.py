@@ -13,7 +13,7 @@ from utils import *
 if __name__ == "__main__":
     dataset = 'HMDB51'
     resume = False
-    train = False
+    train = True
 
     video_path, annotation_path, num_classes = get_dataset_info(dataset)
     model = ActionRecognitionModel(num_classes, sample_size=112, width_mult=1.)
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     if train:
         train_loader, val_loader = get_train_loader(video_path, annotation_path, dataset)
         print("Launching Action Recognition Model training")
-        for i in range(20):
+        for i in range(30):
             train_epoch(i, train_loader, model, optimizer)
             state = {
                 'state_dict': model.state_dict(),

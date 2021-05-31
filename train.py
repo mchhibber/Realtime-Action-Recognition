@@ -4,7 +4,6 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader, random_split
 
 from utils import *
-import datasets.transforms as T
 from datasets.dataset import *
 
 
@@ -12,14 +11,9 @@ def get_train_loader(video_path, annotation_path, dataset_name):
     kwargs = {'num_workers': 2, 'pin_memory': True} if torch.cuda.is_available() else {
         'num_workers': 2}
 
-    train_transforms = torchvision.transforms.Compose([T.ToFloatTensorInZeroOne(),
-                                  T.Resize((128, 128)),
-                                  T.RandomHorizontalFlip(),
-                                  T.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
-                                  T.CenterCrop((112, 112))
-                                  ])
 
-    train_dataset = get_dataset(video_path, annotation_path, dataset_name, train_transforms, True)
+
+    train_dataset = get_dataset(video_path, annotation_path, dataset_name,train= True)
     val_split = 0.05
     total_train_samples = len(train_dataset)
     total_val_samples = round(total_train_samples * val_split)

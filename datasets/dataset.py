@@ -1,4 +1,5 @@
 import torchvision.datasets.hmdb51
+import datasets.transforms as T
 
 
 def get_dataset_info(dataset_name):
@@ -17,11 +18,22 @@ def get_dataset_info(dataset_name):
     return video_path, annotation_path, classes
 
 
-def get_dataset(video_path, annotation_path, dataset_name, train_transforms, test_transforms, train):
+def get_dataset(video_path, annotation_path, dataset_name, train):
     num_frames = 16  # 16
     clip_steps = 50
     num_workers = 2
     dataset = None
+    train_transforms = torchvision.transforms.Compose([T.ToFloatTensorInZeroOne(),
+                                                       T.Resize((128, 128)),
+                                                       T.RandomHorizontalFlip(),
+                                                       T.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
+                                                       T.CenterCrop((112, 112))
+                                                       ])
+    test_transforms = torchvision.transforms.Compose([T.ToFloatTensorInZeroOne(),
+                                                      T.Resize((128, 128)),
+                                                      T.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
+                                                      T.CenterCrop((112, 112))
+                                                      ])
     if dataset_name == "HMDB51":
         if train:
             dataset = torchvision.datasets.HMDB51(video_path, annotation_path, num_frames,
