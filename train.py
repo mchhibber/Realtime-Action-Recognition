@@ -20,8 +20,8 @@ def get_train_loader(video_path, annotation_path, dataset_name):
     train, val = random_split(train_dataset, [total_train_samples - total_val_samples,
                                               total_val_samples])
 
-    train_loader = DataLoader(train, batch_size=64, shuffle=True, **kwargs)
-    val_loader = DataLoader(val, batch_size=64, shuffle=True, **kwargs)
+    train_loader = DataLoader(train, batch_size=32, shuffle=True, **kwargs)
+    val_loader = DataLoader(val, batch_size=16, shuffle=True, **kwargs)
     return train_loader, val_loader
 
 
@@ -41,11 +41,9 @@ def train_epoch(epoch, data_loader, model, optimizer):
         inputs, targets = data[0], data[-1]
         data_time.update(time.time() - end_time)
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = nn.DataParallel(model)
-        model.to(device)
-        targets.to(device)
-        inputs.to(device)
+        if torch.cuda.is_available():
+          targets = targets.cuda()
+          inputs = inputs.cuda()
         inputs = Variable(inputs)
         targets = Variable(targets)
 
@@ -135,10 +133,3 @@ def val_epoch(epoch, data_loader, model):
         return losses.avg.item(), top1.avg.item()
 
 
-if __name__ == "__main__":
-    train_transforms = torchvision.transforms.Compose([T.ToFloatTensorInZeroOne(),
-                                                       T.Resize((128, 128)),
-                                                       T.RandomHorizontalFlip(),
-                                                       T.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
-                                                       T.CenterCrop((112, 112))
-                                                       ])
