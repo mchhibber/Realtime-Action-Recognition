@@ -18,7 +18,8 @@ if __name__ == "__main__":
     video_path, annotation_path, num_classes = get_dataset_info(dataset)
     model = ActionRecognitionModel(num_classes, sample_size=112, width_mult=1.)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = nn.DataParallel(model)
+    if device == "cuda":
+    	model = nn.DataParallel(model)
     model.to(device)
     optimizer = torch.optim.SGD(
         model.parameters(),
@@ -28,6 +29,7 @@ if __name__ == "__main__":
         weight_decay=1e-3)
     scheduler = ReduceLROnPlateau(
         optimizer, 'min', patience=7)
+    best_prec1 = 0
     if resume:
         checkpoint = torch.load('HAR.pth', map_location=torch.device(device))
         model.load_state_dict(checkpoint['state_dict'])
@@ -45,7 +47,7 @@ if __name__ == "__main__":
                 'best_prec1': best_prec1
             }
             save_checkpoint(state, False, 'HAR')
-            _, prec1 = val_epoch(val_loader, model)
+            _, prec1 = val_epoch(i, val_loader, model)
             is_best = prec1 > best_prec1
             best_prec1 = max(prec1, best_prec1)
             state = {
@@ -55,5 +57,7 @@ if __name__ == "__main__":
             }
             save_checkpoint(state, is_best, 'HAR')
     else:
-        test_loader = get_test_loader(video_path, annotation_path, dataset)
-        test(test_loader, model)
+	checkpoint = torch.load('HAR_best.pth', map_location=torch.device(device))
+	model.load_state_dict(checkpoint['state_dict'])
+	test_loader = get_test_loader(video_path, annotation_path, dataset)
+	test(test_loader, model)
