@@ -12,7 +12,7 @@ def get_train_loader(video_path, annotation_path, dataset_name):
     kwargs = {'num_workers': 2, 'pin_memory': True} if torch.cuda.is_available() else {
         'num_workers': 2}
 
-    train_transforms = T.Compose([T.ToFloatTensorInZeroOne(),
+    train_transforms = torchvision.transforms.Compose([T.ToFloatTensorInZeroOne(),
                                   T.Resize((128, 128)),
                                   T.RandomHorizontalFlip(),
                                   T.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
@@ -141,3 +141,10 @@ def val_epoch(epoch, data_loader, model):
         return losses.avg.item(), top1.avg.item()
 
 
+if __name__ == "__main__":
+    train_transforms = torchvision.transforms.Compose([T.ToFloatTensorInZeroOne(),
+                                                       T.Resize((128, 128)),
+                                                       T.RandomHorizontalFlip(),
+                                                       T.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
+                                                       T.CenterCrop((112, 112))
+                                                       ])

@@ -4,6 +4,7 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 
 from datasets.dataset import *
+import datasets.transforms as T
 from utils import *
 
 
@@ -11,7 +12,7 @@ def get_test_loader(video_path, annotation_path, dataset_name):
     kwargs = {'num_workers': 2, 'pin_memory': True} if torch.cuda.is_available() else {
         'num_workers': 2}
 
-    test_transforms = T.Compose([T.ToFloatTensorInZeroOne(),
+    test_transforms = torchvision.transforms.Compose([T.ToFloatTensorInZeroOne(),
                                  T.Resize((128, 128)),
                                  T.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
                                  T.CenterCrop((112, 112))
