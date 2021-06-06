@@ -17,7 +17,7 @@ Place the datasets corresponding to path specified in datasets/dataset.py
 
 ## Results
 ### Model
-2.4M params, 440M FLOPS, 10MB size 
+2.4M parameters, 440M FLOPS, 10MB size 
 
 ### Accuracy
 <ul>
