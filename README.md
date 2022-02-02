@@ -24,3 +24,6 @@ Place the datasets corresponding to path specified in datasets/dataset.py
 <li> HMDB-51: 51.3%
 <li> UCF-101: 80.6%
 </ul>
+
+### Acknowledgements
+- Thanks to okankop for arXiv:1904.02422 on which this project is build upon.
